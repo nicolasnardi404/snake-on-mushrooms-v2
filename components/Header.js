@@ -7,18 +7,20 @@ export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="w-full mb-8 bg-purple-900/30 p-4 rounded-lg backdrop-blur-sm fixed top-0 z-50">
-      <nav className="max-w-6xl mx-auto">
-        <ul className="flex justify-center gap-6">
-          <li>
+    <header className="fixed top-0 w-full z-50 bg-purple-900/30 backdrop-blur-sm border-b border-purple-500/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 className="text-4xl font-bold mb-8 text-white">
+          SNAKE ON MUSHROOMS
+        </h1>
+        <div className="flex items-center justify-between h-16">
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-4">
             <Link
               href="/"
               className={`nav-button ${pathname === "/" ? "active" : ""}`}
             >
               Play
             </Link>
-          </li>
-          <li>
             <Link
               href="/rankings"
               className={`nav-button ${
@@ -27,8 +29,6 @@ export default function Header() {
             >
               Rankings
             </Link>
-          </li>
-          <li>
             <Link
               href="/how-to-play"
               className={`nav-button ${
@@ -37,9 +37,9 @@ export default function Header() {
             >
               How to Play
             </Link>
-          </li>
-        </ul>
-      </nav>
+          </nav>
+        </div>
+      </div>
     </header>
   );
 }

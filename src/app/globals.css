@@ -107,3 +107,36 @@ h1 {
     font-size: 0.8em;
   }
 }
+
+.nav-link {
+  position: relative;
+  color: white;
+  padding: 0.5rem;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.875rem;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -2px;
+  left: 0;
+  background: linear-gradient(45deg, #ff6b6b, #ff9f43);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-link:hover {
+  color: #ff9f43;
+}
+
+.nav-link.active {
+  color: #ff9f43;
+}
