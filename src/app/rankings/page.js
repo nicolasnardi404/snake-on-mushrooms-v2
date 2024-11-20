@@ -1,4 +1,4 @@
-import Ranking from "@/components/Ranking";
+import Ranking from "../../../components/Ranking";
 
 export default function RankingsPage() {
   return (

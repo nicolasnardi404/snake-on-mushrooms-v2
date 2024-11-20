@@ -4,6 +4,8 @@ import styles from "../styles/SnakeGame.module.css";
 
 export default function SnakeGame() {
   const canvasRef = useRef(null);
+  const gameLoopRef = useRef(null);
+  const touchControlsRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -819,29 +821,42 @@ export default function SnakeGame() {
       }
 
       function gameLoop() {
+        if (!gameLoopRef.current) return;
         update();
         draw();
-        setTimeout(gameLoop, isMobile ? 150 : 100);
+        gameLoopRef.current = setTimeout(gameLoop, isMobile ? 150 : 100);
       }
 
       document.addEventListener("keydown", changeDirection);
       document.addEventListener("keydown", handleDevControls);
 
       initGame();
-      gameLoop();
+      gameLoopRef.current = setTimeout(gameLoop, isMobile ? 150 : 100);
 
       return () => {
+        if (gameLoopRef.current) {
+          clearTimeout(gameLoopRef.current);
+          gameLoopRef.current = null;
+        }
+
         window.removeEventListener("resize", resizeCanvas);
         document.removeEventListener("keydown", changeDirection);
         document.removeEventListener("keydown", handleDevControls);
-        if (touchControls) {
-          document.body.removeChild(touchControls);
+
+        if (touchControlsRef.current) {
+          document.body.removeChild(touchControlsRef.current);
+          touchControlsRef.current = null;
         }
+
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       };
     }
 
     const cleanup = snakegame();
-    return () => cleanup();
+    return () => {
+      if (cleanup) cleanup();
+    };
   }, []);
 
   return (
