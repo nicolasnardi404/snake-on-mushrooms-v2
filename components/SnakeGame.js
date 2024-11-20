@@ -1,11 +1,15 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../styles/SnakeGame.module.css";
+import HighScoreModal from "./HighScoreModal";
 
 export default function SnakeGame() {
   const canvasRef = useRef(null);
   const gameLoopRef = useRef(null);
   const touchControlsRef = useRef(null);
+  const [showHighScoreModal, setShowHighScoreModal] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
+  const initGameRef = useRef(null);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -87,6 +91,8 @@ export default function SnakeGame() {
           createTouchControls();
         }
       }
+
+      initGameRef.current = initGame;
 
       function createTouchControls() {
         touchControls = document.createElement("div");
@@ -516,6 +522,75 @@ export default function SnakeGame() {
         );
       }
 
+      async function checkHighScore(score) {
+        try {
+          const response = await fetch("/api/scores");
+          if (!response.ok) throw new Error("Failed to fetch scores");
+          const scores = await response.json();
+          return (
+            scores.length === 0 ||
+            score > Math.min(...scores.map((s) => s.score))
+          );
+        } catch (error) {
+          console.error("Error checking high score:", error);
+          return false;
+        }
+      }
+
+      const handleGameOver = async (finalScore) => {
+        const isHighScore = await checkHighScore(finalScore);
+        if (isHighScore) {
+          setFinalScore(finalScore);
+          setShowHighScoreModal(true);
+        }
+      };
+
+      function update() {
+        if (gameOver) return;
+
+        const head = {
+          x: snake[0].x + direction.x,
+          y: snake[0].y + direction.y,
+        };
+
+        if (
+          head.x < 0 ||
+          head.x >= canvas.width / gridSize ||
+          head.y < 0 ||
+          head.y >= canvas.height / gridSize
+        ) {
+          gameOver = true;
+          handleGameOver(score);
+          return;
+        }
+
+        for (let i = 1; i < snake.length; i++) {
+          if (snake[i].x === head.x && snake[i].y === head.y) {
+            gameOver = true;
+            handleGameOver(score);
+            return;
+          }
+        }
+
+        snake.unshift(head);
+
+        if (head.x === mushroom.x && head.y === mushroom.y) {
+          mushroom = {
+            x: Math.floor((Math.random() * canvas.width) / gridSize),
+            y: Math.floor((Math.random() * canvas.height) / gridSize),
+          };
+          mushroomsEaten++;
+
+          const levelBonus = Math.floor(effectLevel / 2) * 5;
+          score += 10 + levelBonus;
+
+          effectLevel = Math.min(20, Math.floor(mushroomsEaten / 2));
+          updateScoreDisplay();
+        } else {
+          snake.pop();
+        }
+      }
+
       function draw() {
         if (gameOver) {
           const gradient = ctx.createLinearGradient(
@@ -530,14 +605,12 @@ export default function SnakeGame() {
           ctx.fillRect(0, 0, canvas.width, canvas.height);
 
           const centerY = canvas.height / 2;
+          ctx.shadowColor = "#ff0000";
+          ctx.shadowBlur = 10;
+
           const gameOverY = centerY - 80;
           const scoreY = centerY - 20;
           const buttonY = centerY + 40;
-
-          ctx.shadowColor = "#ff0000";
-          ctx.shadowBlur = 10;
-          ctx.shadowOffsetX = 0;
-          ctx.shadowOffsetY = 0;
 
           const gameOverFontSize = isMobile ? "32px" : "48px";
           ctx.fillStyle = "#ff6f61";
@@ -659,6 +732,7 @@ export default function SnakeGame() {
 
           ctx.shadowBlur = 0;
           ctx.shadowColor = "transparent";
+
           return;
         }
 
@@ -696,50 +770,6 @@ export default function SnakeGame() {
 
         if (effectLevel >= 8) {
           shakeIntensity = 5 + (effectLevel - 8) * 2;
-        }
-      }
-
-      function update() {
-        if (gameOver) return;
-
-        const head = {
-          x: snake[0].x + direction.x,
-          y: snake[0].y + direction.y,
-        };
-
-        if (
-          head.x < 0 ||
-          head.x >= canvas.width / gridSize ||
-          head.y < 0 ||
-          head.y >= canvas.height / gridSize
-        ) {
-          gameOver = true;
-          return;
-        }
-
-        for (let i = 1; i < snake.length; i++) {
-          if (snake[i].x === head.x && snake[i].y === head.y) {
-            gameOver = true;
-            return;
-          }
-        }
-
-        snake.unshift(head);
-
-        if (head.x === mushroom.x && head.y === mushroom.y) {
-          mushroom = {
-            x: Math.floor((Math.random() * canvas.width) / gridSize),
-            y: Math.floor((Math.random() * canvas.height) / gridSize),
-          };
-          mushroomsEaten++;
-
-          const levelBonus = Math.floor(effectLevel / 2) * 5;
-          score += 10 + levelBonus;
-
-          effectLevel = Math.min(20, Math.floor(mushroomsEaten / 2));
-          updateScoreDisplay();
-        } else {
-          snake.pop();
         }
       }
 
@@ -859,51 +889,86 @@ export default function SnakeGame() {
     };
   }, []);
 
+  const handleModalSubmit = async (name) => {
+    try {
+      const response = await fetch("/api/scores", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          score: finalScore,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to save score");
+      setShowHighScoreModal(false);
+      if (initGameRef.current) initGameRef.current();
+    } catch (error) {
+      console.error("Error saving score:", error);
+      alert("Failed to save your score. Please try again.");
+    }
+  };
+
+  const handleModalClose = () => {
+    setShowHighScoreModal(false);
+    if (initGameRef.current) initGameRef.current();
+  };
+
   return (
-    <div className={styles["game-container"]}>
-      <div className={styles["score-board"]}>
-        <div className={styles["score-item"]}>
-          <div className={styles["score-label"]}>Score</div>
-          <div className={styles["score-value"]} id="scoreValue">
-            0
+    <>
+      <div className={styles["game-container"]}>
+        <div className={styles["score-board"]}>
+          <div className={styles["score-item"]}>
+            <div className={styles["score-label"]}>Score</div>
+            <div className={styles["score-value"]} id="scoreValue">
+              0
+            </div>
+          </div>
+          <div className={styles["score-item"]}>
+            <div className={styles["score-label"]}>Level</div>
+            <div className={styles["score-value"]} id="levelValue">
+              0
+            </div>
+          </div>
+          <div className={styles["score-item"]}>
+            <div className={styles["score-label"]}>High Score</div>
+            <div className={styles["score-value"]} id="highScoreValue">
+              0
+            </div>
           </div>
         </div>
-        <div className={styles["score-item"]}>
-          <div className={styles["score-label"]}>Level</div>
-          <div className={styles["score-value"]} id="levelValue">
-            0
-          </div>
-        </div>
-        <div className={styles["score-item"]}>
-          <div className={styles["score-label"]}>High Score</div>
-          <div className={styles["score-value"]} id="highScoreValue">
-            0
-          </div>
-        </div>
-      </div>
 
-      <div
-        id="devInstructions"
-        className={styles["devInstructions"]}
-        style={{ display: "none" }}
-      >
-        <p>Dev Controls:</p>
-        <p>0-9: Levels 0-9</p>
-        <p>Q-Y: Levels 10-15</p>
-        <p>U-A: Levels 16-20</p>
-      </div>
+        <div
+          id="devInstructions"
+          className={styles["devInstructions"]}
+          style={{ display: "none" }}
+        >
+          <p>Dev Controls:</p>
+          <p>0-9: Levels 0-9</p>
+          <p>Q-Y: Levels 10-15</p>
+          <p>U-A: Levels 16-20</p>
+        </div>
 
-      <canvas
-        ref={canvasRef}
-        id="gameCanvas"
-        className={styles["gameCanvas"]}
-        style={{
-          border: "1px solid #333",
-          backgroundColor: "#000",
-          maxWidth: "100%",
-          height: "auto",
-        }}
-      />
-    </div>
+        <canvas
+          ref={canvasRef}
+          id="gameCanvas"
+          className={styles["gameCanvas"]}
+          style={{
+            border: "1px solid #333",
+            backgroundColor: "#000",
+            maxWidth: "100%",
+            height: "auto",
+          }}
+        />
+      </div>
+      {showHighScoreModal && (
+        <HighScoreModal
+          score={finalScore}
+          onSubmit={handleModalSubmit}
+          onClose={handleModalClose}
+        />
+      )}
+    </>
   );
 }
