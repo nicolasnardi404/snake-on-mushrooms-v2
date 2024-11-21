@@ -3,24 +3,17 @@ import styles from "../../../styles/Ranking.module.css";
 
 export default function RankingsPage() {
   return (
-    <div className={styles.pageWrapper}>
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <h1 className={styles.title}>🍄 Best Mushroom Eaters 🍄</h1>
-          <p className={styles.subtitle}>
-            The most epic players who've driven the snake insane by devouring
-            waaay too much mushrooms!
-          </p>
-        </div>
-
-        <div className={styles.rankingContainer}>
+    <div
+      className="min-h-screen px-4"
+      style={{ backgroundColor: "rgb(255, 76, 76)" }}
+    >
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold mb-8 text-center text-white">
+          🍄 Best Mushroom Eaters 🍄
+        </h1>
+        <div className="bg-black/20 p-8 rounded-lg backdrop-blur-sm">
           <Ranking />
         </div>
-      </div>
-
-      <div className={styles.backgroundElements}>
-        <div className={styles.backgroundElement1} />
-        <div className={styles.backgroundElement2} />
       </div>
     </div>
   );

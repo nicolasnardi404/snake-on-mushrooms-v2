@@ -14,10 +14,11 @@ export default function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
           rel="stylesheet"
         />
+        <script async src="https://js.stripe.com/v3/buy-button.js"></script>
       </head>
-      <body className="bg-gradient-to-b from-purple-900 to-purple-600 min-h-screen">
+      <body>
         <Header />
-        <main className="container mx-auto px-4 pt-24">{children}</main>
+        <main className="pt-[140px]">{children}</main>
       </body>
     </html>
   );

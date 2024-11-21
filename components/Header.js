@@ -2,40 +2,53 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import styles from "../styles/Header.module.css";
 
 export default function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="fixed top-0 w-full z-50 bg-purple-900/30 backdrop-blur-sm border-b border-purple-500/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-bold mb-8 text-white">
-          SNAKE ON MUSHROOMS
-        </h1>
-        <div className="flex items-center justify-between h-16">
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-4">
+    <header className={styles.header}>
+      <div className={styles.container}>
+        <div className={styles.content}>
+          <h1 className={styles.title}>
+            <span className={styles.mushroom}>🍄</span>
+            SNAKE ON MUSHROOMS
+            <span className={styles.mushroom}>🍄</span>
+          </h1>
+
+          <nav className={styles.nav}>
             <Link
               href="/"
-              className={`nav-button ${pathname === "/" ? "active" : ""}`}
+              className={`${styles.navLink} ${
+                pathname === "/" ? styles.active : ""
+              }`}
             >
               Play
             </Link>
             <Link
               href="/rankings"
-              className={`nav-button ${
-                pathname === "/rankings" ? "active" : ""
+              className={`${styles.navLink} ${
+                pathname === "/rankings" ? styles.active : ""
               }`}
             >
               Rankings
             </Link>
             <Link
               href="/how-to-play"
-              className={`nav-button ${
-                pathname === "/how-to-play" ? "active" : ""
+              className={`${styles.navLink} ${
+                pathname === "/how-to-play" ? styles.active : ""
               }`}
             >
               How to Play
+            </Link>
+            <Link
+              href="/donation"
+              className={`${styles.navLink} ${
+                pathname === "/donation" ? styles.active : ""
+              }`}
+            >
+              Support
             </Link>
           </nav>
         </div>

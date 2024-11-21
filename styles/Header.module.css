@@ -1,0 +1,82 @@
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 50;
+  background-color: rgba(255, 76, 76, 0.95);
+  backdrop-filter: blur(4px);
+}
+
+.container {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 1rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding: 1rem 2rem;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  text-align: center;
+  letter-spacing: 0.2em;
+}
+
+@media (min-width: 768px) {
+  .title {
+    font-size: 2.25rem;
+  }
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .nav {
+    gap: 2rem;
+  }
+}
+
+.navLink {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.7);
+  transition: color 0.3s ease;
+}
+
+.navLink:hover {
+  color: white;
+}
+
+.navLink.active {
+  color: white;
+}
+
+/* Special color for How to Play when active */
+.navLink.active[href="/how-to-play"] {
+  color: #ffd700;
+}
