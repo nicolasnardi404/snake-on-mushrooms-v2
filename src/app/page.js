@@ -1,8 +1,8 @@
 import SnakeGame from "../../components/SnakeGame";
 
-export default function Home() {
+export default function GamePage() {
   return (
-    <div className="flex flex-col items-center">
+    <div style={{ overflow: "hidden", height: "100vh" }}>
       <SnakeGame />
     </div>
   );

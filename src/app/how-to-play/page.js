@@ -9,10 +9,6 @@ export default function HowToPlayPage() {
           <li>🌈 Each mushroom increases your psychedelic level</li>
           <li>💀 Don't hit the walls or yourself</li>
           <li>🏆 Try to get the highest score!</li>
-          <li>
-            <strong>Dev Mode:</strong> Press 'D' to enter dev mode and use
-            number keys to switch levels
-          </li>
         </ul>
       </div>
     </div>

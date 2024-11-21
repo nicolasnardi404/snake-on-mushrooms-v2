@@ -12,6 +12,16 @@ export default function SnakeGame() {
   const initGameRef = useRef(null);
 
   useEffect(() => {
+    // Prevent arrow keys from scrolling the page
+    const preventArrowScroll = (e) => {
+      if ([37, 38, 39, 40].includes(e.keyCode)) {
+        e.preventDefault();
+      }
+    };
+
+    // Add the event listener
+    window.addEventListener("keydown", preventArrowScroll);
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 

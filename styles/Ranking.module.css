@@ -1,0 +1,276 @@
+
+/* Add these animations to your existing globals.css */
+@keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  @keyframes float-delay {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  .animate-float-delay {
+    animation: float-delay 8s ease-in-out infinite;
+  }
+
+/* Add these styles to your existing Ranking.module.css */
+
+.rankingList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.rankingHeader {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 120px;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  color: #ff9f43;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.rankingItem {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(
+    to right,
+    rgba(255, 107, 107, 0.1),
+    rgba(255, 159, 67, 0.1)
+  );
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rankingItem:hover {
+  transform: translateX(10px);
+  background: linear-gradient(
+    to right,
+    rgba(255, 107, 107, 0.2),
+    rgba(255, 159, 67, 0.2)
+  );
+}
+
+.rank {
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.playerInfo {
+  display: grid;
+  grid-template-columns: 1fr 120px 120px;
+  align-items: center;
+  gap: 1rem;
+}
+
+.playerName {
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.score {
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  background: linear-gradient(45deg, #ff6b6b, #ff9f43);
+  -webkit-background-clip: text;
+}
+
+.date {
+  font-size: 0.9rem;
+  color: #ccc;
+  text-align: right;
+}
+
+/* Top 3 special styling */
+.rankingItem:nth-child(2) {
+  background: linear-gradient(
+    to right,
+    rgba(255, 215, 0, 0.15),
+    rgba(255, 215, 0, 0.05)
+  );
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+
+.rankingItem:nth-child(3) {
+  background: linear-gradient(
+    to right,
+    rgba(192, 192, 192, 0.15),
+    rgba(192, 192, 192, 0.05)
+  );
+  border: 1px solid rgba(192, 192, 192, 0.3);
+}
+
+.rankingItem:nth-child(4) {
+  background: linear-gradient(
+    to right,
+    rgba(205, 127, 50, 0.15),
+    rgba(205, 127, 50, 0.05)
+  );
+  border: 1px solid rgba(205, 127, 50, 0.3);
+}
+
+.noScores {
+  text-align: center;
+  padding: 2rem;
+  color: #fff;
+  font-size: 1.1rem;
+  opacity: 0.8;
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .rankingList {
+    padding: 0.5rem;
+  }
+
+  .rankingHeader {
+    display: none;
+  }
+
+  .rankingItem {
+    padding: 0.75rem 1rem;
+    grid-template-columns: 60px 1fr;
+  }
+
+  .playerInfo {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .score, .date {
+    text-align: left;
+  }
+
+  .rank {
+    font-size: 1rem;
+  }
+
+  .playerName, .score {
+    font-size: 0.9rem;
+  }
+
+  .date {
+    font-size: 0.8rem;
+  }
+}
+
+/* Animation for new entries */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.rankingItem {
+  animation: slideIn 0.3s ease-out forwards;
+  animation-delay: calc(var(--index) * 0.1s);
+}
+
+/* Add/update these styles in your Ranking.module.css */
+
+.pageWrapper {
+  min-height: 100vh;
+  position: relative;
+  overflow-y: auto;
+  padding: 20px;
+  background: rgb(255, 76, 76); /* Match your app's background */
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 0 1rem;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  animation: pulse 2s infinite;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: white;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
+.rankingContainer {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
+}
+
+.backgroundElements {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.backgroundElement1,
+.backgroundElement2 {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+}
+
+.backgroundElement1 {
+  width: 300px;
+  height: 300px;
+  background: linear-gradient(45deg, #ff6b6b, #ff9f43);
+}
