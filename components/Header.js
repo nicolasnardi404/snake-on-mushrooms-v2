@@ -11,11 +11,7 @@ export default function Header() {
     <header className={styles.header}>
       <div className={styles.container}>
         <div className={styles.content}>
-          <h1 className={styles.title}>
-            <span className={styles.mushroom}>🍄</span>
-            SNAKE ON MUSHROOMS
-            <span className={styles.mushroom}>🍄</span>
-          </h1>
+          <h1 className={styles.title}>SNAKE ON MUSHROOMS</h1>
 
           <nav className={styles.nav}>
             <Link
