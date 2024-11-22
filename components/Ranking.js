@@ -29,6 +29,7 @@ export default function Ranking() {
 
   return (
     <div className={styles.rankingContainer}>
+      <h1 className={styles.title}>🍄 Best Mushroom Eaters 🍄</h1>
       <div className={styles.tabs}>
         <button
           className={`${styles.tab} ${

@@ -1,4 +1,3 @@
-
 /* Add these animations to your existing globals.css */
 @keyframes float {
     0%, 100% {
@@ -17,6 +16,8 @@
       transform: translateY(-20px);
     }
   }
+
+  
   
   .animate-float {
     animation: float 6s ease-in-out infinite;
@@ -247,8 +248,10 @@
   padding: 2rem;
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  margin: 0 auto; /* Center the container horizontally */
   width: 100%;
+  max-width: 800px; /* Limit the maximum width for larger screens */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 
@@ -295,4 +298,118 @@
     padding: 0.5rem 1rem;
     font-size: 0.7rem;
   }
+}
+
+@media (max-width: 768px) {
+  .rankingHeader {
+    display: none; /* Hide header on small screens */
+  }
+
+  .rankingItem {
+    grid-template-columns: 1fr; /* Use a single column layout */
+    padding: 1rem;
+    text-align: center; /* Align text to the left */
+    margin-bottom: 10px;
+  }
+
+  .rank, .playerName {
+   
+    font-size: 1rem; /* Adjust font size */
+    margin-right: 0.5rem; /* Add space between rank and name */
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+    justify-content: center;
+  }
+
+  .scoreAndDate {
+    display: block; /* Stack score and date vertically */
+    margin-top: 0.5rem; /* Add space above score */
+  }
+
+  .score {
+    font-size: 0.9rem; /* Adjust font size for score */
+    margin-right: 0; /* Remove right margin */
+  }
+
+  .date {
+    display: none; /* Hide date on small screens */
+  }
+}
+
+@media (max-width: 768px) {
+
+    .title_ranking {
+        font-size: 1em;
+    }
+
+   .tab{
+    margin-top: 20px;
+   }
+
+  .rankingContainer {
+    width: 80%; /* Ensure the container takes the full viewport width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 auto;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
+    padding: 0; /* Remove padding to fit content within the screen */
+  }
+
+  .rankingList {
+    width: 80%;
+  }
+
+  .rankingItem {
+    padding: 1rem;
+    text-align: center; /* Align text to the left */
+    width: 80%; /* Ensure each item takes full width */
+  }
+
+  .rank, .playerName {
+    display: inline-block; /* Display rank and name on the same line */
+    font-size: 1rem; /* Adjust font size */
+  }
+
+  .scoreAndDate {
+    display: block; /* Stack score and date vertically */
+    margin-top: 0.5rem; /* Add space above score */
+  }
+
+  .score {
+    font-size: 0.9rem; /* Adjust font size for score */
+    margin-right: 0; /* Remove right margin */
+  }
+
+  .date {
+    display: none; /* Hide date on small screens */
+  }
+}
+
+.pageBackground {
+  min-height: 100vh;
+  background-color: rgb(255, 76, 76);
+  padding: 0 1rem; /* Equivalent to px-4 in Tailwind */
+}
+
+.contentWrapper {
+  max-width: 640px; /* Equivalent to max-w-2xl in Tailwind */
+  margin: 0 auto; /* Equivalent to mx-auto in Tailwind */
+}
+
+.heading {
+  font-size: 2.5rem; /* Adjusted for responsiveness */
+  font-weight: bold;
+  margin-bottom: 2rem; /* Equivalent to mb-8 in Tailwind */
+  text-align: center;
+  color: white;
+}
+
+.rankingContainer {
+  padding: 2rem; /* Equivalent to p-8 in Tailwind */
+  border-radius: 0.5rem; /* Equivalent to rounded-lg in Tailwind */
+  backdrop-filter: blur(10px);
+  margin: 0 auto;
 }
