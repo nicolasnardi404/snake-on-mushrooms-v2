@@ -11,9 +11,11 @@ export default function SnakeGame() {
   const [finalScore, setFinalScore] = useState(0);
   const initGameRef = useRef(null);
 
-  const handleGameOver = useCallback((score) => {
-    setFinalScore(score);
-    setShowHighScoreModal(true);
+  const handleGameOver = useCallback((finalScore) => {
+    requestAnimationFrame(() => {
+      setFinalScore(finalScore);
+      setShowHighScoreModal(true);
+    });
   }, []);
 
   useEffect(() => {
@@ -552,36 +554,55 @@ export default function SnakeGame() {
         }
       }
 
-      function checkCollision() {
-        const head = snake[0];
-        // Check wall collision
-        if (
-          head.x < 0 ||
-          head.x >= canvas.width / gridSize ||
-          head.y < 0 ||
-          head.y >= canvas.height / gridSize
-        ) {
-          return true;
+      let lastDirection = { x: 0, y: 0 };
+      let directionQueue = [];
+
+      function changeDirection(event) {
+        const LEFT = 37;
+        const UP = 38;
+        const RIGHT = 39;
+        const DOWN = 40;
+
+        const keyPressed = event.keyCode;
+
+        const currentDirection = { ...direction };
+
+        directionQueue = [];
+
+        if (keyPressed === LEFT && currentDirection.x === 0) {
+          directionQueue.push({ x: -1, y: 0 });
+        } else if (keyPressed === UP && currentDirection.y === 0) {
+          directionQueue.push({ x: 0, y: -1 });
+        } else if (keyPressed === RIGHT && currentDirection.x === 0) {
+          directionQueue.push({ x: 1, y: 0 });
+        } else if (keyPressed === DOWN && currentDirection.y === 0) {
+          directionQueue.push({ x: 0, y: 1 });
         }
-        // Check self collision
-        for (let i = 1; i < snake.length; i++) {
-          if (head.x === snake[i].x && head.y === snake[i].y) {
-            return true;
-          }
-        }
-        return false;
       }
 
       function update() {
         if (gameOver) return;
 
-        // Move snake
+        if (directionQueue.length > 0) {
+          const nextDirection = directionQueue[0];
+          if (
+            !(
+              nextDirection.x === -lastDirection.x &&
+              nextDirection.y === -lastDirection.y
+            )
+          ) {
+            direction = nextDirection;
+            lastDirection = { ...direction };
+          }
+          directionQueue.shift();
+        }
+
         const newHead = {
           x: snake[0].x + direction.x,
           y: snake[0].y + direction.y,
         };
 
-        if (checkCollision()) {
+        if (checkCollision(newHead)) {
           gameOver = true;
           handleGameOver(score);
           return;
@@ -604,6 +625,25 @@ export default function SnakeGame() {
         } else {
           snake.pop();
         }
+      }
+
+      function checkCollision(head) {
+        if (
+          head.x < 0 ||
+          head.x >= canvas.width / gridSize ||
+          head.y < 0 ||
+          head.y >= canvas.height / gridSize
+        ) {
+          return true;
+        }
+
+        for (let i = 2; i < snake.length; i++) {
+          if (head.x === snake[i].x && head.y === snake[i].y) {
+            return true;
+          }
+        }
+
+        return false;
       }
 
       function draw() {
@@ -788,24 +828,6 @@ export default function SnakeGame() {
         }
       }
 
-      function changeDirection(event) {
-        const keyPressed = event.keyCode;
-        const LEFT = 37,
-          UP = 38,
-          RIGHT = 39,
-          DOWN = 40;
-
-        if (keyPressed === LEFT && direction.x === 0) {
-          direction = { x: -1, y: 0 };
-        } else if (keyPressed === UP && direction.y === 0) {
-          direction = { x: 0, y: -1 };
-        } else if (keyPressed === RIGHT && direction.x === 0) {
-          direction = { x: 1, y: 0 };
-        } else if (keyPressed === DOWN && direction.y === 0) {
-          direction = { x: 0, y: 1 };
-        }
-      }
-
       function handleDevControls(event) {
         if (event.key === "d" || event.key === "D") {
           devMode = !devMode;
@@ -919,26 +941,26 @@ export default function SnakeGame() {
 
       if (!response.ok) throw new Error("Failed to save score");
 
-      setShowHighScoreModal(false);
-      if (initGameRef.current) {
-        setTimeout(() => {
+      requestAnimationFrame(() => {
+        setShowHighScoreModal(false);
+        if (initGameRef.current) {
           initGameRef.current();
-        }, 0);
-      }
+        }
+      });
     } catch (error) {
       console.error("Error saving score:", error);
       alert("Failed to save your score. Please try again.");
     }
   };
 
-  const handleModalClose = () => {
-    setShowHighScoreModal(false);
-    if (initGameRef.current) {
-      setTimeout(() => {
+  const handleModalClose = useCallback(() => {
+    requestAnimationFrame(() => {
+      setShowHighScoreModal(false);
+      if (initGameRef.current) {
         initGameRef.current();
-      }, 0);
-    }
-  };
+      }
+    });
+  }, []);
 
   return (
     <div className={styles["game-container"]}>
