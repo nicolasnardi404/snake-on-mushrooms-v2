@@ -151,10 +151,10 @@ export default function SnakeGame() {
           touchControls.className = styles["touch-controls"];
 
           const buttons = [
-            { direction: "up", symbol: "▲", gridArea: "1 / 2 / 2 / 3" },
-            { direction: "left", symbol: "◀", gridArea: "2 / 1 / 3 / 2" },
-            { direction: "right", symbol: "▶", gridArea: "2 / 3 / 3 / 4" },
-            { direction: "down", symbol: "▼", gridArea: "3 / 2 / 4 / 3" },
+            { direction: "up", symbol: "↑", gridArea: "1 / 2 / 2 / 3" },
+            { direction: "left", symbol: "←", gridArea: "2 / 1 / 3 / 2" },
+            { direction: "right", symbol: "→", gridArea: "2 / 3 / 3 / 4" },
+            { direction: "down", symbol: "↓", gridArea: "3 / 2 / 4 / 3" },
           ];
 
           buttons.forEach(({ direction, symbol, gridArea }) => {

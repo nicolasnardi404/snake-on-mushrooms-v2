@@ -349,7 +349,7 @@
    }
 
   .rankingContainer {
-    width: 80%; /* Ensure the container takes the full viewport width */
+    width: 85%; /* Ensure the container takes the full viewport width */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -359,7 +359,7 @@
   }
 
   .rankingList {
-    width: 80%;
+    width: 100%;
   }
 
   .rankingItem {
