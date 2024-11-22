@@ -146,34 +146,36 @@ export default function SnakeGame() {
       initGameRef.current = initGame;
 
       function createTouchControls() {
-        touchControls = document.createElement("div");
-        touchControls.className = styles["touch-controls"];
+        if (!touchControlsRef.current && isMobile) {
+          const touchControls = document.createElement("div");
+          touchControls.className = styles["touch-controls"];
 
-        const buttons = [
-          { direction: "up", symbol: "▲", gridArea: "1 / 2 / 2 / 3" },
-          { direction: "left", symbol: "◀", gridArea: "2 / 1 / 3 / 2" },
-          { direction: "right", symbol: "▶", gridArea: "2 / 3 / 3 / 4" },
-          { direction: "down", symbol: "▼", gridArea: "3 / 2 / 4 / 3" },
-        ];
+          const buttons = [
+            { direction: "up", symbol: "▲", gridArea: "1 / 2 / 2 / 3" },
+            { direction: "left", symbol: "◀", gridArea: "2 / 1 / 3 / 2" },
+            { direction: "right", symbol: "▶", gridArea: "2 / 3 / 3 / 4" },
+            { direction: "down", symbol: "▼", gridArea: "3 / 2 / 4 / 3" },
+          ];
 
-        buttons.forEach(({ direction, symbol, gridArea }) => {
-          const button = document.createElement("button");
-          button.textContent = symbol;
-          button.className = `${styles["touch-button"]} ${direction}`;
-          button.style.gridArea = gridArea;
+          buttons.forEach(({ direction, symbol, gridArea }) => {
+            const button = document.createElement("button");
+            button.textContent = symbol;
+            button.className = `${styles["touch-button"]} ${direction}`;
+            button.style.gridArea = gridArea;
 
-          const handleInput = (e) => {
-            e.preventDefault();
-            handleTouchControl(direction);
-          };
+            const handleInput = (e) => {
+              e.preventDefault();
+              handleTouchControl(direction);
+            };
 
-          button.addEventListener("touchstart", handleInput);
-          button.addEventListener("mousedown", handleInput);
-          touchControls.appendChild(button);
-        });
+            button.addEventListener("touchstart", handleInput);
+            button.addEventListener("mousedown", handleInput);
+            touchControls.appendChild(button);
+          });
 
-        document.body.appendChild(touchControls);
-        touchControls.style.display = isMobile ? "grid" : "none";
+          document.body.appendChild(touchControls);
+          touchControlsRef.current = touchControls;
+        }
       }
 
       function handleTouchControl(dir) {
@@ -940,9 +942,7 @@ export default function SnakeGame() {
     }
 
     const cleanup = snakegame();
-    return () => {
-      if (cleanup) cleanup();
-    };
+    return cleanup;
   }, [handleGameOver]);
 
   const handleModalSubmit = async (name) => {
