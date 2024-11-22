@@ -5,7 +5,7 @@ import styles from "../styles/Ranking.module.css";
 
 export default function Ranking() {
   const [scores, setScores] = useState([]);
-  const [activeTab, setActiveTab] = useState("all"); // 'all' or 'monthly'
+  const [activeTab, setActiveTab] = useState("monthly"); // 'all' or 'monthly'
 
   useEffect(() => {
     fetchScores(activeTab);
@@ -21,11 +21,10 @@ export default function Ranking() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -69,9 +68,9 @@ export default function Ranking() {
               {index === 2 && "🥉"}
               {index > 2 && `#${index + 1}`}
             </div>
-            <div className={styles.playerInfo}>
-              <span className={styles.playerName}>{score.name}</span>
-              <span className={styles.score}>{score.score} pts</span>
+            <div className={styles.playerName}>{score.name}</div>
+            <div className={styles.scoreAndDate}>
+              <span className={styles.score}>{score.score}</span>
               <span className={styles.date}>{formatDate(score.createdAt)}</span>
             </div>
           </div>

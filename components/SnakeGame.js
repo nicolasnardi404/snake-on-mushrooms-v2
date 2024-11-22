@@ -11,11 +11,45 @@ export default function SnakeGame() {
   const [finalScore, setFinalScore] = useState(0);
   const initGameRef = useRef(null);
 
-  const handleGameOver = useCallback((finalScore) => {
-    requestAnimationFrame(() => {
+  async function checkHighScore(score) {
+    try {
+      console.log("Checking high score:", score);
+      const response = await fetch("/api/scores");
+      if (!response.ok) throw new Error("Failed to fetch scores");
+      const scores = await response.json();
+      console.log("Current scores:", scores);
+
+      // If we have less than 10 scores, any score qualifies
+      if (scores.length < 10) {
+        console.log("Less than 10 scores, automatically qualifies");
+        return true;
+      }
+
+      // Sort scores in descending order and get the 10th score
+      const sortedScores = scores.sort((a, b) => b.score - a.score);
+      const tenthScore = sortedScores[9].score;
+      console.log("Tenth highest score:", tenthScore);
+
+      // Return true if the current score is higher than the 10th place score
+      const isHighScore = score > tenthScore;
+      console.log("Is high score?", isHighScore);
+      return isHighScore;
+    } catch (error) {
+      console.error("Error checking high score:", error);
+      return false;
+    }
+  }
+
+  const handleGameOver = useCallback(async (finalScore) => {
+    console.log("Game Over with score:", finalScore);
+    try {
+      const isHighScore = await checkHighScore(finalScore);
+      console.log("Setting modal visibility to:", isHighScore);
       setFinalScore(finalScore);
-      setShowHighScoreModal(true);
-    });
+      setShowHighScoreModal(isHighScore);
+    } catch (error) {
+      console.error("Error in handleGameOver:", error);
+    }
   }, []);
 
   useEffect(() => {
@@ -537,21 +571,6 @@ export default function SnakeGame() {
           gridSize,
           gridSize
         );
-      }
-
-      async function checkHighScore(score) {
-        try {
-          const response = await fetch("/api/scores");
-          if (!response.ok) throw new Error("Failed to fetch scores");
-          const scores = await response.json();
-          return (
-            scores.length === 0 ||
-            score > Math.min(...scores.map((s) => s.score))
-          );
-        } catch (error) {
-          console.error("Error checking high score:", error);
-          return false;
-        }
       }
 
       let lastDirection = { x: 0, y: 0 };

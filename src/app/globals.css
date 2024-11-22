@@ -6,8 +6,8 @@ body {
   align-items: center;
   justify-content: center;
   margin: 0;
+  padding: 0;
   color: #fff;
-  min-height: 100vh;
   padding: 20px;
   box-sizing: border-box;
 }
@@ -72,6 +72,8 @@ h1 {
 
 main {
   padding-top: 140px;
+  margin: 0;
+  padding: 0;
 }
 
 @media (max-width: 768px) {
