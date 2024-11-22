@@ -1,0 +1,69 @@
+.container { 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+  margin-bottom: 2em;
+  margin-top: 1em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.instructionsCard {
+  padding: 2rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease;
+}
+
+.instructionsCard:hover {
+  transform: translateY(-4px);
+}
+
+.instructionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.instructionsList li {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  text-align: center;
+}
+
+.instructionsList li.disclaimer {
+  background-color: rgba(255, 217, 0, 0.15);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  font-style: italic;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.instructionsList li.disclaimer:hover {
+  background-color: rgba(255, 217, 0, 0.2);
+  transform: scale(1.02) rotate(-0.5deg);
+}
+
+@media (max-width: 480px) {
+  .instructionsList li.disclaimer {
+    font-size: 1rem;
+  }
+}
