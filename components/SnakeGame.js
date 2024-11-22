@@ -7,9 +7,11 @@ export default function SnakeGame() {
   const canvasRef = useRef(null);
   const gameLoopRef = useRef(null);
   const touchControlsRef = useRef(null);
+  const rotationRef = useRef(0);
   const [showHighScoreModal, setShowHighScoreModal] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const initGameRef = useRef(null);
+  const isRotationMode = useRef(false);
 
   async function checkHighScore(score) {
     try {
@@ -75,15 +77,20 @@ export default function SnakeGame() {
         );
       const gridSize = isMobile ? 25 : 35;
 
+      // Initialize rotation speed (radians per frame)
+      const rotationSpeed = 0.005; // Adjust this value for faster or slower rotation
+
       function resizeCanvas() {
         const maxWidth = isMobile ? window.innerWidth - 20 : 800;
         const maxHeight = isMobile ? window.innerHeight * 0.6 : 600;
         canvas.width = Math.floor(maxWidth / gridSize) * gridSize;
         canvas.height = Math.floor(maxHeight / gridSize) * gridSize;
+        console.log("Canvas resized");
       }
 
       resizeCanvas();
       window.addEventListener("resize", resizeCanvas);
+      console.log("Added resizeCanvas event listener");
 
       let snake, mushroom, direction, mushroomsEaten, gameOver;
       let effectLevel = 0;
@@ -137,6 +144,7 @@ export default function SnakeGame() {
         glitchMushrooms = [];
         score = 0;
         updateScoreDisplay();
+        console.log("Game initialized");
 
         if (!touchControls && isMobile) {
           createTouchControls();
@@ -149,12 +157,13 @@ export default function SnakeGame() {
         if (!touchControlsRef.current && isMobile) {
           const touchControls = document.createElement("div");
           touchControls.className = styles["touch-controls"];
+          console.log("Creating touch controls");
 
           const buttons = [
-            { direction: "up", symbol: "↑", gridArea: "1 / 2 / 2 / 3" },
-            { direction: "left", symbol: "←", gridArea: "2 / 1 / 3 / 2" },
-            { direction: "right", symbol: "→", gridArea: "2 / 3 / 3 / 4" },
-            { direction: "down", symbol: "↓", gridArea: "3 / 2 / 4 / 3" },
+            { direction: "up", symbol: "▲", gridArea: "1 / 2 / 2 / 3" },
+            { direction: "left", symbol: "◀", gridArea: "2 / 1 / 3 / 2" },
+            { direction: "right", symbol: "▶", gridArea: "2 / 3 / 3 / 4" },
+            { direction: "down", symbol: "▼", gridArea: "3 / 2 / 4 / 3" },
           ];
 
           buttons.forEach(({ direction, symbol, gridArea }) => {
@@ -175,6 +184,7 @@ export default function SnakeGame() {
 
           document.body.appendChild(touchControls);
           touchControlsRef.current = touchControls;
+          console.log("Touch controls appended to document body");
         }
       }
 
@@ -192,7 +202,10 @@ export default function SnakeGame() {
           case "down":
             if (direction.y === 0) direction = { x: 0, y: 1 };
             break;
+          default:
+            break;
         }
+        console.log(`Direction changed to: ${dir}`);
       }
 
       function applyEffectLevel1(ctx) {
@@ -459,67 +472,53 @@ export default function SnakeGame() {
       }
 
       function applyEffectLevel18(ctx) {
+        ctx.save();
         const time = Date.now() / 1000;
 
-        ctx.save();
-        for (let i = 0; i < canvas.height; i += 2) {
-          const offset = Math.sin(time * 2 + i * 0.03) * 15;
-          ctx.drawImage(
-            canvas,
-            0,
-            i,
-            canvas.width,
-            2,
-            offset,
-            i,
-            canvas.width,
-            2
-          );
+        // Draw lightning bolts
+        ctx.strokeStyle = "#00FFFF";
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i < 5; i++) {
+          ctx.beginPath();
+          ctx.moveTo(Math.sin(time + i) * canvas.width, 0);
+          ctx.lineTo(Math.cos(time - i) * canvas.width, canvas.height);
+          ctx.stroke();
         }
 
-        for (let i = 0; i < 3; i++) {
-          ctx.globalAlpha = 0.2;
-          ctx.translate(Math.sin(time + i) * 10, Math.cos(time + i) * 10);
-          drawGameElements(ctx);
-        }
+        ctx.globalCompositeOperation = "lighter";
+        drawGameElements(ctx);
         ctx.restore();
       }
 
       function applyEffectLevel19(ctx) {
         ctx.save();
-
-        const gradient = ctx.createRadialGradient(
-          canvas.width / 2,
-          canvas.height / 2,
-          0,
-          canvas.width / 2,
-          canvas.height / 2,
-          canvas.width
-        );
-
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
         const time = Date.now() / 1000;
-        gradient.addColorStop(0, `hsla(${(time * 50) % 360}, 100%, 50%, 0.2)`);
-        gradient.addColorStop(
-          0.5,
-          `hsla(${(time * 50 + 120) % 360}, 100%, 50%, 0.2)`
+
+        // Create void effect
+        const gradient = ctx.createRadialGradient(
+          centerX,
+          centerY,
+          0,
+          centerX,
+          centerY,
+          canvas.width / 2
         );
+
+        gradient.addColorStop(0, "rgba(75, 0, 130, 0.7)");
         gradient.addColorStop(
-          1,
-          `hsla(${(time * 50 + 240) % 360}, 100%, 50%, 0.2)`
+          Math.sin(time) * 0.5 + 0.5,
+          "rgba(138, 43, 226, 0.5)"
         );
+        gradient.addColorStop(1, "rgba(0, 0, 0, 0.9)");
 
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < 50; i++) {
-          const x = (Math.sin(time * i) * canvas.width) / 2 + canvas.width / 2;
-          const y =
-            (Math.cos(time * i) * canvas.height) / 2 + canvas.height / 2;
-          const size = Math.random() * 3;
-
-          ctx.fillStyle = `rgba(255, 255, 255, ${Math.random()})`;
-          ctx.fillRect(x, y, size, size);
-        }
+        ctx.globalCompositeOperation = "screen";
+        drawGameElements(ctx);
         ctx.restore();
       }
 
@@ -527,30 +526,35 @@ export default function SnakeGame() {
         ctx.save();
         const time = Date.now() / 1000;
 
-        const gradient = ctx.createRadialGradient(
-          canvas.width / 2,
-          canvas.height / 2,
-          0,
-          canvas.width / 2,
-          canvas.height / 2,
-          canvas.width
-        );
-        gradient.addColorStop(0, "rgba(0, 0, 0, 1)");
-        gradient.addColorStop(0.7, "rgba(75, 0, 130, 0.5)");
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0.8)");
-        ctx.fillStyle = gradient;
+        // Split reality effect
+        ctx.globalCompositeOperation = "difference";
+        ctx.translate(Math.sin(time) * 10, Math.cos(time) * 10);
+        drawGameElements(ctx);
+
+        ctx.fillStyle = `hsl(${(time * 50) % 360}, 70%, 50%)`;
+        ctx.globalAlpha = 0.3;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < 5; i++) {
-          ctx.save();
-          ctx.globalAlpha = 0.1;
-          ctx.translate(canvas.width / 2, canvas.height / 2);
-          ctx.rotate(time * (i + 1) * 0.5);
-          ctx.scale(1 - i * 0.1, 1 - i * 0.1);
-          ctx.translate(-canvas.width / 2, -canvas.height / 2);
-          drawGameElements(ctx);
-          ctx.restore();
+        // Add glitch effect
+        if (Math.random() < 0.1) {
+          const x = Math.random() * canvas.width;
+          const y = Math.random() * canvas.height;
+          const w = Math.random() * 100;
+          const h = Math.random() * 100;
+
+          ctx.drawImage(
+            canvas,
+            x,
+            y,
+            w,
+            h,
+            x + Math.random() * 20 - 10,
+            y + Math.random() * 20 - 10,
+            w,
+            h
+          );
         }
+
         ctx.restore();
       }
 
@@ -641,10 +645,20 @@ export default function SnakeGame() {
           const levelBonus = Math.floor(effectLevel / 2) * 5;
           score += 10 + levelBonus;
 
-          effectLevel = Math.min(20, Math.floor(mushroomsEaten / 2));
+          effectLevel = Math.min(18, Math.floor(mushroomsEaten / 2));
           updateScoreDisplay();
         } else {
           snake.pop();
+        }
+
+        if (effectLevel === 20) {
+          // Player has completed all levels, enable rotation mode and reset level
+          isRotationMode.current = true;
+          effectLevel = 0;
+          console.log("Entering rotation mode!");
+        } else if (score >= effectLevel * 100 && effectLevel < 20) {
+          effectLevel++;
+          console.log(`Level up! Now at level ${effectLevel}`);
         }
       }
 
@@ -668,6 +682,8 @@ export default function SnakeGame() {
       }
 
       function draw() {
+        const ctx = canvas.getContext("2d");
+
         if (gameOver) {
           const gradient = ctx.createLinearGradient(
             0,
@@ -812,6 +828,17 @@ export default function SnakeGame() {
           return;
         }
 
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Only apply rotation if in rotation mode
+        if (isRotationMode.current) {
+          ctx.save();
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.rotate(rotationRef.current);
+          ctx.translate(-canvas.width / 2, -canvas.height / 2);
+        }
+
+        // Draw background and game elements
         if (colorSchemes[effectLevel].background === "pulse") {
           ctx.fillStyle = `hsl(${(Date.now() / 20) % 360}, 70%, 50%)`;
         } else if (colorSchemes[effectLevel].background === "rainbow") {
@@ -823,6 +850,11 @@ export default function SnakeGame() {
 
         drawGameElements(ctx);
 
+        if (isRotationMode.current) {
+          ctx.restore();
+        }
+
+        // Apply all effect levels
         if (effectLevel >= 1) applyEffectLevel1(ctx);
         if (effectLevel >= 2) applyEffectLevel2(ctx);
         if (effectLevel >= 3) applyEffectLevel3(ctx);
@@ -889,12 +921,15 @@ export default function SnakeGame() {
 
         if (scoreElement) scoreElement.textContent = score;
         if (levelElement) {
-          levelElement.textContent = `${effectLevel}${devMode ? " (DEV)" : ""}`;
+          levelElement.textContent = `${effectLevel}${devMode ? " (DEV)" : ""}${
+            isRotationMode.current ? " (R)" : ""
+          }`;
         }
 
         const highScore = localStorage.getItem("highScore") || 0;
         if (score > highScore) {
           localStorage.setItem("highScore", score);
+          console.log(`New high score set: ${score}`);
         }
         if (highScoreElement) {
           highScoreElement.textContent = Math.max(highScore, score);
@@ -910,34 +945,50 @@ export default function SnakeGame() {
 
       function gameLoop() {
         if (!gameLoopRef.current) return;
+
+        // Update rotation angle
+        rotationRef.current += rotationSpeed;
+        if (rotationRef.current >= Math.PI * 2) {
+          rotationRef.current -= Math.PI * 2;
+        }
+
         update();
         draw();
+
         gameLoopRef.current = setTimeout(gameLoop, isMobile ? 150 : 100);
       }
 
       document.addEventListener("keydown", changeDirection);
       document.addEventListener("keydown", handleDevControls);
+      console.log("Added keydown event listeners");
 
       initGame();
       gameLoopRef.current = setTimeout(gameLoop, isMobile ? 150 : 100);
+      console.log("Game loop started");
 
       return () => {
         if (gameLoopRef.current) {
           clearTimeout(gameLoopRef.current);
           gameLoopRef.current = null;
+          console.log("Game loop cleared");
         }
 
         window.removeEventListener("resize", resizeCanvas);
+        console.log("Removed resizeCanvas event listener");
+
         document.removeEventListener("keydown", changeDirection);
         document.removeEventListener("keydown", handleDevControls);
+        console.log("Removed keydown event listeners");
 
         if (touchControlsRef.current) {
           document.body.removeChild(touchControlsRef.current);
           touchControlsRef.current = null;
+          console.log("Touch controls removed from document body");
         }
 
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        console.log("Canvas cleared");
       };
     }
 
