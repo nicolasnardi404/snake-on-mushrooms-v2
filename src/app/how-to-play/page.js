@@ -10,11 +10,11 @@ export default function HowToPlayPage() {
             <li>🎮 Use arrow keys to control the snake</li>
             <li>🍄 Collect mushrooms to grow and trip</li>
             <li>🌈 Each mushroom increases your psychedelic level</li>
-            <li>💀 Don't hit the walls or yourself</li>
+            <li>💀 Don&apos;t hit the walls or yourself</li>
             <li>🏆 Try to get the highest score!</li>
             <li className={styles.disclaimer}>
               ⚠️ Remember: Only digital snakes can eat this amount of mushrooms!
-              Don't try this at home 🐍
+              Don&apos;t try this at home 🐍
             </li>
           </ul>
         </div>
