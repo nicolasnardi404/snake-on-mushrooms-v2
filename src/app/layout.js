@@ -1,5 +1,6 @@
 import "@/app/globals.css";
 import Header from "../../components/Header";
+import { Analytics } from "@vercel/analytics/react";
 
 export const metadata = {
   title: "Snake on Mushrooms",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }) {
         <script async src="https://js.stripe.com/v3/buy-button.js"></script>
       </head>
       <body>
+        <Analytics />
         <Header />
         <main>{children}</main>
       </body>
