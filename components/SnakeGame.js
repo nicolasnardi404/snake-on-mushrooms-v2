@@ -21,6 +21,29 @@ export default function SnakeGame() {
       const scores = await response.json();
       console.log("Current scores:", scores);
 
+      // Check for monthly high scores
+      const currentMonth = new Date().getMonth();
+      const monthlyScores = scores.filter(
+        (s) => new Date(s.date).getMonth() === currentMonth
+      );
+
+      // If we have less than 10 monthly scores, any score qualifies
+      if (monthlyScores.length < 10) {
+        console.log("Less than 10 monthly scores, automatically qualifies");
+        return true;
+      }
+
+      // Sort monthly scores in descending order and get the 10th score
+      const sortedMonthlyScores = monthlyScores.sort(
+        (a, b) => b.score - a.score
+      );
+      const tenthMonthlyScore = sortedMonthlyScores[9].score;
+      console.log("Tenth highest monthly score:", tenthMonthlyScore);
+
+      // Return true if the current score is higher than the 10th place monthly score
+      const isMonthlyHighScore = score > tenthMonthlyScore;
+      console.log("Is monthly high score?", isMonthlyHighScore);
+
       // If we have less than 10 scores, any score qualifies
       if (scores.length < 10) {
         console.log("Less than 10 scores, automatically qualifies");
@@ -645,7 +668,12 @@ export default function SnakeGame() {
           const levelBonus = Math.floor(effectLevel / 2) * 5;
           score += 10 + levelBonus;
 
-          effectLevel = Math.min(18, Math.floor(mushroomsEaten / 2));
+          if (mushroomsEaten >= 2) {
+            effectLevel = Math.min(
+              18,
+              Math.floor((mushroomsEaten - 2) / 2) + 1
+            );
+          }
           updateScoreDisplay();
         } else {
           snake.pop();
@@ -838,7 +866,6 @@ export default function SnakeGame() {
           ctx.translate(-canvas.width / 2, -canvas.height / 2);
         }
 
-        // Draw background and game elements
         if (colorSchemes[effectLevel].background === "pulse") {
           ctx.fillStyle = `hsl(${(Date.now() / 20) % 360}, 70%, 50%)`;
         } else if (colorSchemes[effectLevel].background === "rainbow") {
@@ -854,7 +881,7 @@ export default function SnakeGame() {
           ctx.restore();
         }
 
-        // Apply all effect levels
+        // Apply effects starting from level 1
         if (effectLevel >= 1) applyEffectLevel1(ctx);
         if (effectLevel >= 2) applyEffectLevel2(ctx);
         if (effectLevel >= 3) applyEffectLevel3(ctx);
