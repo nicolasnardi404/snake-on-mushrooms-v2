@@ -1,7 +1,8 @@
 "use client";
-import { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "../styles/SnakeGame.module.css";
 import HighScoreModal from "./HighScoreModal";
+import * as Tone from "tone";
 
 export default function SnakeGame() {
   const canvasRef = useRef(null);
@@ -83,6 +84,8 @@ export default function SnakeGame() {
         }
       } catch (error) {
         console.error("Error in handleGameOver:", error);
+      } finally {
+        Tone.Transport.stop();
       }
     },
     [gameSpeed]
@@ -95,6 +98,48 @@ export default function SnakeGame() {
   };
 
   useEffect(() => {
+    // Initialize Tone.js synths
+    const eatSynth = new Tone.Synth().toDestination();
+    const gameOverSynth = new Tone.Synth().toDestination();
+    const cureSynth = new Tone.Synth().toDestination();
+
+    // Background music with a more dynamic sequence
+    const backgroundSynth = new Tone.Synth({
+      oscillator: {
+        type: "triangle",
+      },
+      envelope: {
+        attack: 0.1,
+        decay: 0.2,
+        sustain: 0.5,
+        release: 0.8,
+      },
+    }).toDestination();
+
+    const backgroundPart = new Tone.Sequence(
+      (time, note) => {
+        backgroundSynth.triggerAttackRelease(note, "8n", time);
+      },
+      ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
+      "8n"
+    );
+
+    function playEatSound() {
+      eatSynth.triggerAttackRelease("C5", "8n"); // Play a high C note
+    }
+
+    function playGameOverSound() {
+      gameOverSynth.triggerAttackRelease("G3", "1n"); // Play a lower G note
+    }
+
+    function playCureSound() {
+      // Create a playful, Mario-like sound
+      const now = Tone.now();
+      cureSynth.triggerAttackRelease("E5", "16n", now);
+      cureSynth.triggerAttackRelease("G5", "16n", now + 0.1);
+      cureSynth.triggerAttackRelease("C6", "8n", now + 0.2);
+    }
+
     // Prevent arrow keys from scrolling the page
     const preventArrowScroll = (e) => {
       if ([37, 38, 39, 40].includes(e.keyCode)) {
@@ -175,6 +220,12 @@ export default function SnakeGame() {
       ];
 
       function initGame() {
+        // Start the background music
+        if (Tone.Transport.state !== "started") {
+          Tone.Transport.start();
+          backgroundPart.start(0);
+        }
+
         snake = [{ x: 5, y: 5 }];
         mushroom = { x: 7, y: 7 };
         direction = { x: 0, y: 0 };
@@ -676,6 +727,8 @@ export default function SnakeGame() {
         snake.unshift(newHead);
 
         if (newHead.x === mushroom.x && newHead.y === mushroom.y) {
+          playCureSound(); // Play cure sound every time a mushroom is eaten
+
           mushroom = {
             x: Math.floor((Math.random() * canvas.width) / gridSize),
             y: Math.floor((Math.random() * canvas.height) / gridSize),
@@ -1028,6 +1081,9 @@ export default function SnakeGame() {
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         console.log("Canvas cleared");
+
+        Tone.Transport.stop();
+        backgroundPart.stop();
       };
     }
 
