@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import styles from "../styles/SnakeGame.module.css";
 import HighScoreModal from "./HighScoreModal";
 import * as Tone from "tone";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faVolumeUp, faVolumeMute } from "@fortawesome/free-solid-svg-icons";
 
 export default function SnakeGame() {
   const canvasRef = useRef(null);
@@ -14,6 +16,7 @@ export default function SnakeGame() {
   const initGameRef = useRef(null);
   const isRotationMode = useRef(false);
   const [gameSpeed, setGameSpeed] = useState(100); // Default speed
+  const [soundOn, setSoundOn] = useState(true); // Sound toggle state
 
   async function checkHighScore(score) {
     try {
@@ -118,26 +121,34 @@ export default function SnakeGame() {
 
     const backgroundPart = new Tone.Sequence(
       (time, note) => {
-        backgroundSynth.triggerAttackRelease(note, "8n", time);
+        if (soundOn) {
+          backgroundSynth.triggerAttackRelease(note, "8n", time);
+        }
       },
       ["C4", "E4", "G4", "B4", "C5", "B4", "G4", "E4"],
       "8n"
     );
 
     function playEatSound() {
-      eatSynth.triggerAttackRelease("C5", "8n"); // Play a high C note
+      if (soundOn) {
+        eatSynth.triggerAttackRelease("C5", "8n"); // Play a high C note
+      }
     }
 
     function playGameOverSound() {
-      gameOverSynth.triggerAttackRelease("G3", "1n"); // Play a lower G note
+      if (soundOn) {
+        gameOverSynth.triggerAttackRelease("G3", "1n"); // Play a lower G note
+      }
     }
 
     function playCureSound() {
-      // Create a playful, Mario-like sound
-      const now = Tone.now();
-      cureSynth.triggerAttackRelease("E5", "16n", now);
-      cureSynth.triggerAttackRelease("G5", "16n", now + 0.1);
-      cureSynth.triggerAttackRelease("C6", "8n", now + 0.2);
+      if (soundOn) {
+        // Create a playful, Mario-like sound
+        const now = Tone.now();
+        cureSynth.triggerAttackRelease("E5", "16n", now);
+        cureSynth.triggerAttackRelease("G5", "16n", now + 0.1);
+        cureSynth.triggerAttackRelease("C6", "8n", now + 0.2);
+      }
     }
 
     // Prevent arrow keys from scrolling the page
@@ -1089,7 +1100,11 @@ export default function SnakeGame() {
 
     const cleanup = snakegame();
     return cleanup;
-  }, [handleGameOver, gameSpeed]);
+  }, [handleGameOver, gameSpeed, soundOn]);
+
+  const toggleSound = () => {
+    setSoundOn((prevSoundOn) => !prevSoundOn);
+  };
 
   const handleModalSubmit = async (name) => {
     try {
@@ -1189,6 +1204,9 @@ export default function SnakeGame() {
           onClose={handleModalClose}
         />
       )}
+      <button onClick={toggleSound} className={styles["sound-toggle"]}>
+        <FontAwesomeIcon icon={soundOn ? faVolumeUp : faVolumeMute} />
+      </button>
     </div>
   );
 }
