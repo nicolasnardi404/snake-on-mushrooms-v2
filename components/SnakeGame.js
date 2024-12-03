@@ -12,6 +12,7 @@ export default function SnakeGame() {
   const [finalScore, setFinalScore] = useState(0);
   const initGameRef = useRef(null);
   const isRotationMode = useRef(false);
+  const [gameSpeed, setGameSpeed] = useState(100); // Default speed
 
   async function checkHighScore(score) {
     try {
@@ -65,17 +66,33 @@ export default function SnakeGame() {
     }
   }
 
-  const handleGameOver = useCallback(async (finalScore) => {
-    console.log("Game Over with score:", finalScore);
-    try {
-      const isHighScore = await checkHighScore(finalScore);
-      console.log("Setting modal visibility to:", isHighScore);
-      setFinalScore(finalScore);
-      setShowHighScoreModal(isHighScore);
-    } catch (error) {
-      console.error("Error in handleGameOver:", error);
-    }
-  }, []);
+  const handleGameOver = useCallback(
+    async (finalScore) => {
+      console.log("Game Over with score:", finalScore);
+      try {
+        // Check if the current speed is not "Slow" (150ms)
+        if (gameSpeed !== 150) {
+          const isHighScore = await checkHighScore(finalScore);
+          console.log("Setting modal visibility to:", isHighScore);
+          setFinalScore(finalScore);
+          setShowHighScoreModal(isHighScore);
+        } else {
+          console.log("Game played on Slow speed, not eligible for ranking.");
+          setFinalScore(finalScore);
+          setShowHighScoreModal(false);
+        }
+      } catch (error) {
+        console.error("Error in handleGameOver:", error);
+      }
+    },
+    [gameSpeed]
+  );
+
+  // Function to handle speed change
+  const handleSpeedChange = (event) => {
+    const selectedSpeed = parseInt(event.target.value, 10);
+    setGameSpeed(selectedSpeed);
+  };
 
   useEffect(() => {
     // Prevent arrow keys from scrolling the page
@@ -977,7 +994,7 @@ export default function SnakeGame() {
         update();
         draw();
 
-        gameLoopRef.current = setTimeout(gameLoop, isMobile ? 150 : 100);
+        gameLoopRef.current = setTimeout(gameLoop, gameSpeed); // Use selected speed
       }
 
       document.addEventListener("keydown", changeDirection);
@@ -985,7 +1002,7 @@ export default function SnakeGame() {
       console.log("Added keydown event listeners");
 
       initGame();
-      gameLoopRef.current = setTimeout(gameLoop, isMobile ? 150 : 100);
+      gameLoopRef.current = setTimeout(gameLoop, gameSpeed);
       console.log("Game loop started");
 
       return () => {
@@ -1016,7 +1033,7 @@ export default function SnakeGame() {
 
     const cleanup = snakegame();
     return cleanup;
-  }, [handleGameOver]);
+  }, [handleGameOver, gameSpeed]);
 
   const handleModalSubmit = async (name) => {
     try {
@@ -1056,6 +1073,15 @@ export default function SnakeGame() {
 
   return (
     <div className={styles["game-container"]}>
+      <div className={styles["speed-selection"]}>
+        <label htmlFor="speed">Select Speed: </label>
+        <select id="speed" value={gameSpeed} onChange={handleSpeedChange}>
+          <option value="150">Slow</option>
+          <option value="100">Normal</option>
+          <option value="50">Fast</option>
+        </select>
+      </div>
+
       <div className={styles["score-board"]}>
         <div className={styles["score-item"]}>
           <div className={styles["score-label"]}>Score</div>
