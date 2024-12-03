@@ -668,11 +668,9 @@ export default function SnakeGame() {
           const levelBonus = Math.floor(effectLevel / 2) * 5;
           score += 10 + levelBonus;
 
-          if (mushroomsEaten >= 2) {
-            effectLevel = Math.min(
-              18,
-              Math.floor((mushroomsEaten - 2) / 2) + 1
-            );
+          if (mushroomsEaten % 2 === 0) {
+            effectLevel = Math.min(20, effectLevel + 1);
+            console.log(`Level up! Now at level ${effectLevel}`);
           }
           updateScoreDisplay();
         } else {
@@ -684,9 +682,6 @@ export default function SnakeGame() {
           isRotationMode.current = true;
           effectLevel = 0;
           console.log("Entering rotation mode!");
-        } else if (score >= effectLevel * 100 && effectLevel < 20) {
-          effectLevel++;
-          console.log(`Level up! Now at level ${effectLevel}`);
         }
       }
 
