@@ -1151,6 +1151,9 @@ export default function SnakeGame() {
           <option value="100">Normal</option>
           <option value="50">Fast</option>
         </select>
+        <button onClick={toggleSound} className={styles["sound-toggle"]}>
+          <FontAwesomeIcon icon={soundOn ? faVolumeUp : faVolumeMute} />
+        </button>
       </div>
 
       <div className={styles["score-board"]}>
@@ -1204,9 +1207,6 @@ export default function SnakeGame() {
           onClose={handleModalClose}
         />
       )}
-      <button onClick={toggleSound} className={styles["sound-toggle"]}>
-        <FontAwesomeIcon icon={soundOn ? faVolumeUp : faVolumeMute} />
-      </button>
     </div>
   );
 }
