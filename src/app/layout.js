@@ -5,6 +5,11 @@ import { Analytics } from "@vercel/analytics/react";
 export const metadata = {
   title: "Snake on Mushrooms",
   description: "A trippy snake game",
+  icons: {
+    icon: "/mushroom.png",
+    shortcut: "/mushroom.png",
+    apple: "/mushroom.png",
+  },
 };
 
 export default function RootLayout({ children }) {
